@@ -1,3 +1,7 @@
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions.js';
+
 import envConfig from '../env.config';
 
-export type AppConfig = ReturnType<typeof envConfig>;
+export interface AppConfig extends ReturnType<typeof envConfig> {
+  database: PostgresConnectionOptions;
+}
