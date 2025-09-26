@@ -9,6 +9,6 @@ export default new DataSource({
   // Only tenant-specific entities should be added to this DataSource.
   // Do not include shared/public entities — those belong in public-data-source.ts.
   entities: [],
-  migrations: [__dirname + '/migrations/public/*.{ts,js}'],
-  migrationsTableName: 'public_schema_migrations',
+  migrations: [__dirname + '/migrations/tenant/*.{ts,js}'],
+  migrationsTableName: 'tenant_schema_migrations',
 });
