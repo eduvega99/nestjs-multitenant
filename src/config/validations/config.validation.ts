@@ -1,5 +1,4 @@
-import z from 'zod';
-import { $ZodIssue } from 'zod/v4/core';
+import * as z from 'zod';
 
 const requiredString = z.string().min(1);
 
@@ -17,13 +16,7 @@ const configSchema = z.object({
 export function validate(config: Record<string, unknown>) {
   const { error, data } = configSchema.safeParse(config);
   if (error) {
-    const errorMessage = error.issues.map(format).join('. ');
-    throw new Error('Config validation error. ' + errorMessage);
+    throw new Error(`Config validation error:\n${z.prettifyError(error)}\n`);
   }
   return data;
-}
-
-function format({ path, message }: $ZodIssue) {
-  const formatted = message.charAt(0).toLowerCase() + String(message.slice(1));
-  return `"${path.toString()}" ${formatted}`;
 }
