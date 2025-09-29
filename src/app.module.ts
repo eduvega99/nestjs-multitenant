@@ -6,6 +6,7 @@ import databaseConfig from './config/database.config';
 import envConfig from './config/env.config';
 import { AppConfig } from './config/interfaces/app-config.interface';
 import { validate } from './config/validations/config.validation';
+import { TenantsModule } from './tenants/tenants.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { validate } from './config/validations/config.validation';
       useFactory: (configService: ConfigService<AppConfig, true>) =>
         configService.get('database', { infer: true }),
     }),
+    TenantsModule,
   ],
   controllers: [],
   providers: [],
