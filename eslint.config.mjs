@@ -43,7 +43,15 @@ export default defineConfig(
       'import/order': [
         'error',
         {
-          groups: ['builtin', 'external'],
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'unknown',
+          ],
           'newlines-between': 'always',
           alphabetize: {
             order: 'asc',
@@ -51,6 +59,15 @@ export default defineConfig(
           },
         },
       ],
+    },
+  },
+  {
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.json',
+        },
+      },
     },
   },
 );

@@ -3,7 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions.js';
 
-import { AppConfig } from '../../config/interfaces/app-config.interface';
+import { AppConfig } from 'src/config/interfaces/app-config.interface';
+
 import { Connection } from '../interfaces/connection.interface';
 
 @Injectable()

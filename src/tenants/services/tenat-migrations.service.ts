@@ -2,7 +2,8 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions.js';
 
-import tenantDataSource from '../../database/tenant-data-source';
+import tenantDataSource from 'src/database/tenant-data-source';
+
 import { TenantsService } from '../tenants.service';
 
 @Injectable()
