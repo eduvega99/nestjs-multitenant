@@ -7,6 +7,7 @@ import envConfig from './config/env.config';
 import { AppConfig } from './config/interfaces/app-config.interface';
 import { validate } from './config/validations/config.validation';
 import { TenantsModule } from './tenants/tenants.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TenantsModule } from './tenants/tenants.module';
         configService.get('database', { infer: true }),
     }),
     TenantsModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
