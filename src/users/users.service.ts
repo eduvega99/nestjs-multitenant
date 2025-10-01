@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSaltSync, hashSync } from 'bcryptjs';
 import { Repository } from 'typeorm';
@@ -22,5 +22,18 @@ export class UsersService {
   private hashPassword(password: string) {
     const salt = genSaltSync();
     return hashSync(password, salt);
+  }
+
+  async findByUsername(username: string) {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user')
+      .addSelect('user.password')
+      .where('username = :username', { username })
+      .getOne();
+    if (!user) {
+      throw new NotFoundException(`User with username "${username}" not found`);
+    }
+    return user;
   }
 }
