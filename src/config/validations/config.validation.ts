@@ -7,6 +7,7 @@ const configSchema = z.object({
     preprocessNumber,
     z.number().int().min(1).max(65535).optional(),
   ),
+  JWT_SECRET: z.string().nonempty(),
   DB_HOST: z.hostname(),
   DB_NAME: requiredString,
   DB_USERNAME: requiredString,
