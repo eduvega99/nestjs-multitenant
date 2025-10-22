@@ -11,6 +11,18 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  findAllByTenantId(tenantId: number) {
+    return this.userRepository.findBy({ tenantId });
+  }
+
+  async findOneByIdAndTenantId(id: string, tenantId: number) {
+    const user = await this.userRepository.findOneBy({ id, tenantId });
+    if (!user) {
+      throw new NotFoundException(`User with id "${id}" not found`);
+    }
+    return user;
+  }
+
   async findByUsername(username: string) {
     const user = await this.userRepository
       .createQueryBuilder('user')
