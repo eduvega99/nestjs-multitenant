@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
+import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
 import databaseConfig from './config/database.config';
 import envConfig from './config/env.config';
 import { AppConfig } from './config/interfaces/app-config.interface';
@@ -26,7 +27,9 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
   ],
-  controllers: [],
-  providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).exclude('auth/login').forRoutes('*path');
+  }
+}
