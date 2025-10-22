@@ -35,6 +35,10 @@ export class ClientsService {
     return client;
   }
 
+  async findOneByEmail(email: string) {
+    return await this.clientRepository.findOneBy({ email });
+  }
+
   async update(id: number, updateClientDto: UpdateClientDto) {
     const client = await this.clientRepository.preload({
       id,

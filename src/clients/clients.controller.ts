@@ -12,13 +12,14 @@ import {
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { UniqueEmailPipe } from './pipes/unique-email.pipe';
 
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
+  create(@Body(UniqueEmailPipe) createClientDto: CreateClientDto) {
     return this.clientsService.create(createClientDto);
   }
 
@@ -35,7 +36,7 @@ export class ClientsController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateClientDto: UpdateClientDto,
+    @Body(UniqueEmailPipe) updateClientDto: UpdateClientDto,
   ) {
     return this.clientsService.update(id, updateClientDto);
   }
