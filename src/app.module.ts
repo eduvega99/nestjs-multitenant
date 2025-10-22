@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
 import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
+import { ClientsModule } from './clients/clients.module';
 import databaseConfig from './config/database.config';
 import envConfig from './config/env.config';
 import { AppConfig } from './config/interfaces/app-config.interface';
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     TenantsModule,
     UsersModule,
     AuthModule,
+    ClientsModule,
   ],
 })
 export class AppModule implements NestModule {
