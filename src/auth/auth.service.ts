@@ -23,7 +23,7 @@ export class AuthService {
       }
       return this.generateAuthPayload(user);
     } catch {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid username or password');
     }
   }
 
