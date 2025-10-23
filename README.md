@@ -1,98 +1,134 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Multitenant
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS template for building multitenant applications using PostgreSQL schemas.
+Each tenant has its own schema, and connections are injected dynamically at runtime.
+Using other database systems requires additional adaptation.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of contents
 
-## Description
+- [📝 Prerequisites](#-prerequisites)
+- [🛠️ Project Setup](#️-project-setup)
+- [💾 Database Management](#-database-management)
+- [🔌 Multitenancy Overview](#-multitenancy-overview)
+- [🚧 Development](#-development)
+- [🚀 Deployment](#-deployment)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📝 Prerequisites
 
-## Project setup
+To run the application, you need:
+
+- **Node.js** - `22.x` or above (preferably the latest LTS). Install via [NVM](https://github.com/nvm-sh/nvm) (recommended) or [Node.js official site](https://nodejs.org/en/download).
+- **PostgreSQL** - `16.x` or above. Download from the official [PostgreSQL](https://www.postgresql.org/download/) site.
+
+> [!TIP]
+> I also recommend installing **Nest CLI**, a command-line interface tool that simplifies development:
+>
+> ```bash
+> $ npm install -g @nestjs/cli
+> ```
+>
+> More info in the [NestJS CLI documentation](https://docs.nestjs.com/cli/overview).
+
+## 🛠️ Project setup
+
+1. **Create the database** in PostgreSQL:
+   ```postgres
+   CREATE DATABASE my_multitenant_database;
+   ```
+2. **Install dependencies**:
+   ```bash
+   $ npm install
+   ```
+3. **Set up environment variables**. Copy `.env.template` to `.env` and fill in the required values.
+   > [!WARNING]
+   > All variables in the `.env.template` file should be left blank to avoid git tracking.
+4. **Run public migrations** (required before starting the app):
+   ```bash
+   $ npm run db:migrations -- --type=public --action=run
+   ```
+   For more details about this command, see [db:migrations](#dbmigrations) section.
+
+## 💾 Database management
+
+This project provides two database management scripts: `db:migrations` and `db:seed`.
+
+### db:migrations
+
+Manage project database migrations.
+It accepts the following parameters:
+
+- `--type` → **Required.** Target schema type. The value must be `public` or `tenant`.
+- `--action` → **Required.** What to do `run`, `revert` or `generate`.
+- `--name` → Required only when `--action` is `generate`. The name of the migration.
+
+Some examples:
 
 ```bash
-$ npm install
+# Run migrations from the public schema
+$ npm run db:migrations -- --type=public --action=run
+
+# Revert migrations from the public schema
+$ npm run db:migrations -- --type=public --action=revert
+
+# Generate a migration for tenant schemas
+$ npm run db:migrations -- --type=tenant --action=generate --name=ExampleMigrationName
 ```
 
-## Compile and run the project
+### db:seed
+
+Populates the database with initial or sample data.
+Used for development or demo purposes.
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ npm run db:seed
 ```
 
-## Run tests
+> [!NOTE]
+> Users created via the seed script all use the password `Password_123`.
+> You can use these credentials to log in.
+
+## 🔌 Multitenancy overview
+
+This template uses PostgreSQL schemas for multitenancy.
+Connections are injected dynamically at runtime based on the authenticated user's tenant.
+
+- The `JwtMiddleware` extracts the tenant identifier from the authenticated user and sets `req.tenant`.
+- The `req.tenant` value is then used by `TENANT_CONNECTION` to select the correct schema.
+- The `TENANT_CONNECTION` provider creates a tenant-specific database connection.
+- A practical example of this can be seen in the `ClientsModule`, which demonstrates how tenant-specific data is managed.
+
+> For a deeper understanding, check the `/src/tenant` module.
+
+## 🚧 Development
+
+Start the application in development mode:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+$ npm run start                         # Start in development mode
+$ npm run start:dev                     # Start in watch mode
+$ npm run start:debug                   # Start in debug mode
+$ npm run start:debug -- --inspect-brk  # Debug with inspector attached
 ```
 
-## Deployment
+> [!IMPORTANT]
+> If you are working in a development environment, you must also run tenant migrations from the public schema (even if the tables will be empty).
+> This ensures TypeORM recognizes tenant-scoped entities and can detect future schema changes correctly.
+>
+> ```bash
+> $ npm run db:migrations -- --type=tenant --action=run
+> ```
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 🚀 Deployment
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. **Run pending public migrations:**
+   ```bash
+   $ npm run db:migrations -- --type=public --action=run
+   ```
+2. **Build application:**
+   ```bash
+   $ npm run build
+   ```
+3. **Run the application:**
+   ```bash
+   $ npm run start:prod
+   ```
